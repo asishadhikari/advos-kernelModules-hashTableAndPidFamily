@@ -20,39 +20,6 @@ struct birthday
 };
 
 
-	
-	struct birthday person1 = {
-	  .name = "Charles",
-		.day = 12,
-	  .month = 1,
-	  .year = 1921,
-	};
-	struct birthday person2 = {
-	  .name = "Xavier",
-		.day = 1,
-	  .month = 12,
-	  .year = 1321,
-	};
-	struct birthday person3 = {
-	  .name = "Cotay",
-		.day = 22,
-	  .month = 11,
-	  .year = 1421,
-	};
-	struct birthday person4 = {
-	  .name = "Ramy",
-		.day = 22,
-	  .month = 10,
-	  .year = 1969,
-	};
-	struct birthday person5 = {
-	  .name = "Simpson",
-		.day = 13,
-	  .month = 7,
-	  .year = 1979,
-	};
-	
-
 
 //container of node
 struct bucket
@@ -146,6 +113,37 @@ static int __init main_init(void)
 {
 	printk(KERN_INFO "Loading Module\n");
 	//initialise 5 struct birthday elements
+	struct birthday person1 = {
+	  .name = "Charles",
+		.day = 12,
+	  .month = 1,
+	  .year = 1921,
+	};
+	struct birthday person2 = {
+	  .name = "Xavier",
+		.day = 1,
+	  .month = 12,
+	  .year = 1321,
+	};
+	struct birthday person3 = {
+	  .name = "Cotay",
+		.day = 22,
+	  .month = 11,
+	  .year = 1421,
+	};
+	struct birthday person4 = {
+	  .name = "Ramy",
+		.day = 22,
+	  .month = 10,
+	  .year = 1969,
+	};
+	struct birthday person5 = {
+	  .name = "Simpson",
+		.day = 13,
+	  .month = 7,
+	  .year = 1979,
+	};
+	
 
 	add_birthday(person1);
 	add_birthday(person2);
