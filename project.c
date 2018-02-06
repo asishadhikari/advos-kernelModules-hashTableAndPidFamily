@@ -2,15 +2,17 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 
+//node
 struct birthday{
+	char name[100];
 	int day;
 	int month;
 	int year;
-	//list_head has next and prev
+	//list_head has next and prev, embed ll within nodes
 	struct list_head list;
 };
 
-//macro to init birthday_list of type LIST_HEAD
+//macro to init birthday_list of type list_head
 static LIST_HEAD(birthday_list);
 
 
@@ -22,13 +24,9 @@ static LIST_HEAD(birthday_list);
 
 /* This function is called when the module is loaded. */
 int simple init(void){
-	struct birthday *person;
-	person = kmalloc(sizeof(*person),GFP_KERNEL);
-	person->day = 23;
-	person->month = 6;
-	person->year = 1994;
-	//initialise the list head with first node's list
-	INIT_LIST_HEAD(&person->list);
+	//initialise 5 struct birthday elements
+	struct birthday *person1,*person2,*person3,*person4,*person5 ;
+	
 
 	printk(KERN INFO "Loading Module\n");
 	return 0;
