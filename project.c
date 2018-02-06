@@ -48,14 +48,16 @@ static void traverseTable(void)
 	struct list_head* iter_hashTable;
 	struct list_head* iter_bucket;
 	//for each entry in hashTable list
-	list_for_each(iter_hashTable, &hashTable){
-		struct bucket* bucket_n = list_entry(iter_hashTable, struct bucket, hash_head);
-			//for each entry in bucket
-			list_for_each(iter_bucket, &(bucket_n->bucket_head)){
-				struct birthday* person = list_entry(iter_bucket, struct birthday, head);
-				printk("Name: %s, day=%d, month=%d, year=%d",
-    			person->name, person->day, person->month, person->year);
-			}
+	list_for_each(iter_hashTable, &hashTable)
+	{
+	struct bucket* bucket_n = list_entry(iter_hashTable, struct bucket, hash_head);
+	//for each entry in bucket
+		list_for_each(iter_bucket, &(bucket_n->bucket_head))
+		{
+			struct birthday* person = list_entry(iter_bucket, struct birthday, head);
+			printk("Name: %s, day=%d, month=%d, year=%d",person->name,
+						 person->day, person->month, person->year);
+		}
 	}
 }
 
@@ -63,12 +65,15 @@ static void traverseTable(void)
 struct list_head* get_bucket_head(char* name){
 	unsigned int key = hashName(name);
 	struct list_head* iter;
-	list_for_each(iter, &hashTable){
+	list_for_each(iter, &hashTable)
+	{
 		struct bucket* a_bucket = list_entry(iter, struct bucket, hash_head);
+		//if a match for key found in existing hashTable
 		if (a_bucket->key==key){
-      return a_bucket->hash_head;
+	    return a_bucket->hash_head;
 		}
   }
+  //if no match found for bucket with the key for name
   struct bucket* new_bucket;
   new_bucket = kmalloc(sizeof(*new_bucket), GFP_KERNEL);
   new_bucket->key = key;
