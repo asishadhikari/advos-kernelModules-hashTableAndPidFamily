@@ -25,9 +25,9 @@ struct bucket
 {
 	unsigned int key;
 	//unique list_head for each bucket
-	LIST_HEAD(bucket_head);
+	struct list_head *bucket_head;
 	//part of the main list of hashing buckets
-	struct list_head hash_head;
+	struct list_head *hash_head;
 
 };
 
@@ -45,15 +45,35 @@ unsigned int hashName(unsigned char *str)
 
 static void traverseTable(void)
 {
-	struct list_head iter;
-	list_for_each(iter, hashTable){
-		struct bucket* bucket_n = list_entry(iter, struct bucket, hash_head);
+	struct list_head* iter_hashTable;
+	struct list_head* iter_bucket;
+	//for each entry in hashTable list
+	list_for_each(iter_hashTable, &hashTable){
+		struct bucket* bucket_n = list_entry(iter_bucket, struct bucket, hash_head);
+			//for each entry in bucket
 			list_for_each(iter, bucket){
 				struct birthday* person = list_entry(iter, struct birthday, head);
 				printk("Name: %s, day=%d, month=%d, year=%d",
     			person->name, person->day, person->month, person->year);
 			}
 	}
+}
+
+struct list_head* get_bucket_head(char* name){
+	unsigned int key = hashName(name);
+	struct list_head* iter;
+	list_for_each(iter, &hashTable){
+		struct bucket* a_bucket = list_entry(iter, struct bucket, hash_head);
+		if (a_bucket->key==key){
+      return a_bucket->hash_head;
+		}
+  }
+  struct bucket* new_bucket;
+  new_bucket = kmalloc(sizeof(*new_bucket), GFP_KERNEL);
+  new_bucket->key = key;
+  list_add(new_bucket->hash_head, )
+
+  return NULL;
 }
 
 
