@@ -43,22 +43,17 @@ unsigned int hashName(unsigned char *str)
   return hash % HASH_TABLE_SIZE ;  //limit hash table size
 }
 
-static void initialise_bucket(void)
+static void traverseTable(void)
 {
-	struct bucket *new_bucket;
-	
-	for (int i = 0; i < HASH_TABLE_SIZE; ++i)
-	{
-		new_bucket = kmalloc(sizeof(*new_bucket,GFP_KERNEL));
-		list_add(new_bucket,hashTable);
-
+	struct list_head iter;
+	list_for_each(iter, hashTable){
+		struct bucket* bucket_n = list_entry(iter, struct bucket, hash_head);
+			list_for_each(iter, bucket){
+				struct birthday* person = list_entry(iter, struct birthday, head);
+				printk("Name: %s, day=%d, month=%d, year=%d",
+    			person->name, person->day, person->month, person->year);
+			}
 	}
-}
-
-//add birthday to respective bucket
-static void add_birthday(struct birthday){
-	unsigned index = hashName(birthday.name);
-	
 }
 
 
