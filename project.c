@@ -7,7 +7,7 @@
 //number of buckets for hash table implementation
 #define HASH_TABLE_SIZE 20
 //hash table implemented as doubly linked list with buckets of unique value 
-static LIST_HEAD(hashTable);
+static struct list_head hashTable;
 //node
 struct birthday
 {
@@ -32,12 +32,14 @@ struct bucket
 };
 
 
+
+
 // hash function for using name as key
 unsigned int hashName(unsigned char *str)
 {
   unsigned long hash = 0;
   int c;
-  while (c = *str++)
+  while ((c = *str++))
       hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
 
   return hash % HASH_TABLE_SIZE ;  //limit hash table size
@@ -45,23 +47,26 @@ unsigned int hashName(unsigned char *str)
 
 static void traverseTable(void)
 {
-	struct list_head* iter_hashTable;
-	struct list_head* iter_bucket;
-	//for each entry in hashTable list
-	list_for_each(iter_hashTable, &hashTable)
-	{
-	struct bucket* bucket_n = list_entry(iter_hashTable, struct bucket, hash_head);
-	//for each entry in bucket
-		list_for_each(iter_bucket, &(bucket_n->bucket_head))
+	//traverse only if list not empty 
+	if (!list_empty(&hashTable)){
+		struct list_head* iter_hashTable;
+		struct list_head* iter_bucket;
+		//for each entry in hashTable list
+		list_for_each(iter_hashTable, &hashTable)
 		{
-			struct birthday* person = list_entry(iter_bucket, struct birthday, head);
-			printk("Name: %s, day=%d, month=%d, year=%d",person->name,
-						 person->day, person->month, person->year);
+		struct bucket* bucket_n = list_entry(iter_hashTable, struct bucket, hash_head);
+		//for each entry in bucket
+			list_for_each(iter_bucket, &(bucket_n->bucket_head))
+			{
+				struct birthday* person = list_entry(iter_bucket, struct birthday, head);
+				printk("Name: %s, day=%d, month=%d, year=%d",person->name,
+							 person->day, person->month, person->year);
+			}
 		}
 	}
 }
 
-
+//return the bucket (and init if necessary) a person with this name will belong to
 struct list_head* get_bucket_head(char* name){
 	unsigned int key = hashName(name);
 	struct list_head* iter;
@@ -70,31 +75,34 @@ struct list_head* get_bucket_head(char* name){
 		struct bucket* a_bucket = list_entry(iter, struct bucket, hash_head);
 		//if a match for key found in existing hashTable
 		if (a_bucket->key==key){
-	    return a_bucket->hash_head;
+	    return &(a_bucket->hash_head);
 		}
   }
   //if no match found for bucket with the key for name
   struct bucket* new_bucket;
   new_bucket = kmalloc(sizeof(*new_bucket), GFP_KERNEL);
-  new_bucket->key = key;
-  this_bucket = *new_bucket;
-  list_add_tail(new_bucket->hash_head, &hashTable);
-  return new_bucket->hash_head;
+  if(new_bucket!=NULL){
+	  new_bucket->key = key;
+	  list_add_tail(&(new_bucket->hash_head), &hashTable);
+	  return &(new_bucket->hash_head);
+	}
 }
 
 
 static void add_birthday(struct birthday person)
 {
-	struct list_head *person_bucket;
-	person_bucket = get_bucket_head(person.name);
-	list_add_tail(&(person.head), &(person_bucket.bucket_head));
-}
+	//get the bucket this record will belong to
+	struct list_head *person_bucket = get_bucket_head(person.name);
+	//put the node into a bucket
+	list_add_tail(&(person.head), person_bucket);
 
+}
 
 
 /* This function is called when the module is loaded. */
 static int __init main_init(void)
 {
+	const unsigned int num_persons = 5;
 	printk(KERN INFO "Loading Module\n");
 	//initialise 5 struct birthday elements
 	struct birthday person1={
@@ -127,7 +135,7 @@ static int __init main_init(void)
 	  .month = 7,
 	  .year = 1979,
 	};
-
+	init_hash_table();
 	add_birthday(person1);
 	add_birthday(person2);
 	add_birthday(person3);
