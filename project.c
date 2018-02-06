@@ -12,9 +12,20 @@ struct birthday{
 	struct list_head list;
 };
 
-//macro to init birthday_list of type list_head
-static LIST_HEAD(birthday_list);
+struct hashTable{
+	struct bucket bucket_head;
+	unsigned int size;
+};
 
+// hash function for using name as key
+unsigned int hashName(unsigned char *str){
+  unsigned long hash = 0;
+  int c;
+  while (c = *str++)
+      hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+  return hash % ?? ;
+}
 
 
 
@@ -26,7 +37,7 @@ static LIST_HEAD(birthday_list);
 int simple init(void){
 	//initialise 5 struct birthday elements
 	struct birthday *person1,*person2,*person3,*person4,*person5 ;
-	
+	//initialise 
 
 	printk(KERN INFO "Loading Module\n");
 	return 0;
