@@ -2,6 +2,7 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/list.h>
+#include <linux/slab.h>
 
 //number of buckets for hash table implementation
 #define HASH_TABLE_SIZE 20
@@ -27,8 +28,8 @@ struct bucket
 	LIST_HEAD(bucket_head);
 	//part of the main list of hashing buckets
 	struct list_head hash_head;
-};
 
+};
 
 
 // hash function for using name as key
@@ -42,12 +43,22 @@ unsigned int hashName(unsigned char *str)
   return hash % HASH_TABLE_SIZE ;  //limit hash table size
 }
 
-static void add_birthday(struct birthday person)
+static void initialise_bucket(void)
 {
-	unsigned int index = _hashName(person.name);
+	struct bucket *new_bucket;
 	
+	for (int i = 0; i < HASH_TABLE_SIZE; ++i)
+	{
+		new_bucket = kmalloc(sizeof(*new_bucket,GFP_KERNEL));
+		list_add(new_bucket,hashTable);
+
+	}
+}
+
+//add birthday to respective bucket
+static void add_birthday(struct birthday){
+	unsigned index = hashName(birthday.name);
 	
-	hlist_add_head(&bday.bday_hlist, &(bday_table.head_list[hash_index]));
 }
 
 
@@ -88,6 +99,22 @@ int simple init(void)
 	  .year = 1979,
 	};
 
+
+
+	/*
+	//initialise head member in struct birthday 
+	INIT_LIST_HEAD(&person1->head);
+	INIT_LIST_HEAD(&person2->head);
+	INIT_LIST_HEAD(&person3->head);
+	INIT_LIST_HEAD(&person4->head);
+	INIT_LIST_HEAD(&person5->head);
+	//add the birthday instances to the tail of the linked list
+	list_add_tail(&person1->head, &hashTable);
+	list_add_tail(&person2->head, &hashTable);
+	list_add_tail(&person3->head, &hashTable);
+	list_add_tail(&person4->head, &hashTable);
+	list_add_tail(&person5->head, &hashTable);
+	*/
 
 
 
