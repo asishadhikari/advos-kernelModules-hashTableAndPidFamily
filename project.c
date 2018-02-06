@@ -51,7 +51,7 @@ static void traverseTable(void)
 	list_for_each(iter_hashTable, &hashTable){
 		struct bucket* bucket_n = list_entry(iter_hashTable, struct bucket, hash_head);
 			//for each entry in bucket
-			list_for_each(iter_bucket, &bucket_n.bucket_head){
+			list_for_each(iter_bucket, &(bucket_n->bucket_head)){
 				struct birthday* person = list_entry(iter_bucket, struct birthday, head);
 				printk("Name: %s, day=%d, month=%d, year=%d",
     			person->name, person->day, person->month, person->year);
@@ -80,9 +80,9 @@ struct list_head* get_bucket_head(char* name){
 
 static void add_birthday(struct birthday person)
 {
-	struct bucket *person_bucket;
-	person_bucket = person.name;
-	
+	struct list_head *person_bucket;
+	person_bucket = get_bucket_head(person.name);
+	list_add_tail(&(person.head), &(person_bucket.bucket_head));
 }
 
 
@@ -90,7 +90,7 @@ static void add_birthday(struct birthday person)
 /* This function is called when the module is loaded. */
 static int __init main_init(void)
 {
-	
+	printk(KERN INFO "Loading Module\n");
 	//initialise 5 struct birthday elements
 	struct birthday person1={
 	  .name = "Charles",
@@ -123,32 +123,20 @@ static int __init main_init(void)
 	  .year = 1979,
 	};
 
+	add_birthday(person1);
+	add_birthday(person2);
+	add_birthday(person3);
+	add_birthday(person4);
+	add_birthday(person5);
 
-
-	/*
-	//initialise head member in struct birthday 
-	INIT_LIST_HEAD(&person1->head);
-	INIT_LIST_HEAD(&person2->head);
-	INIT_LIST_HEAD(&person3->head);
-	INIT_LIST_HEAD(&person4->head);
-	INIT_LIST_HEAD(&person5->head);
-	//add the birthday instances to the tail of the linked list
-	list_add_tail(&person1->head, &hashTable);
-	list_add_tail(&person2->head, &hashTable);
-	list_add_tail(&person3->head, &hashTable);
-	list_add_tail(&person4->head, &hashTable);
-	list_add_tail(&person5->head, &hashTable);
-	*/
-
-
-
-	printk(KERN INFO "Loading Module\n");
+	traverseTable();
 	return 0;
 }
 
 /* This function is called when the module is removed. */
 static void __exit main_exit(void)
 {
+	kfree(&hashTable);
 	printk(KERN INFO "Removing Module\n");
 }
 /* Macros for registering module entry and exit points. */
