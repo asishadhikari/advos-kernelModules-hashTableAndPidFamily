@@ -25,9 +25,9 @@ struct bucket
 {
 	unsigned int key;
 	//unique list_head for each bucket
-	struct list_head *bucket_head;
+	struct list_head bucket_head;
 	//part of the main list of hashing buckets
-	struct list_head *hash_head;
+	struct list_head hash_head;
 
 };
 
@@ -49,15 +49,16 @@ static void traverseTable(void)
 	struct list_head* iter_bucket;
 	//for each entry in hashTable list
 	list_for_each(iter_hashTable, &hashTable){
-		struct bucket* bucket_n = list_entry(iter_bucket, struct bucket, hash_head);
+		struct bucket* bucket_n = list_entry(iter_hashTable, struct bucket, hash_head);
 			//for each entry in bucket
-			list_for_each(iter, bucket){
-				struct birthday* person = list_entry(iter, struct birthday, head);
+			list_for_each(iter_bucket, &bucket_n.bucket_head){
+				struct birthday* person = list_entry(iter_bucket, struct birthday, head);
 				printk("Name: %s, day=%d, month=%d, year=%d",
     			person->name, person->day, person->month, person->year);
 			}
 	}
 }
+
 
 struct list_head* get_bucket_head(char* name){
 	unsigned int key = hashName(name);
@@ -71,15 +72,23 @@ struct list_head* get_bucket_head(char* name){
   struct bucket* new_bucket;
   new_bucket = kmalloc(sizeof(*new_bucket), GFP_KERNEL);
   new_bucket->key = key;
-  list_add(new_bucket->hash_head, )
+  this_bucket = *new_bucket;
+  list_add_tail(new_bucket->hash_head, &hashTable);
+  return new_bucket->hash_head;
+}
 
-  return NULL;
+
+static void add_birthday(struct birthday person)
+{
+	struct bucket *person_bucket;
+	person_bucket = person.name;
+	
 }
 
 
 
 /* This function is called when the module is loaded. */
-int simple init(void)
+static int __init main_init(void)
 {
 	
 	//initialise 5 struct birthday elements
@@ -138,14 +147,14 @@ int simple init(void)
 }
 
 /* This function is called when the module is removed. */
-void simple exit(void)
+static void __exit main_exit(void)
 {
 	printk(KERN INFO "Removing Module\n");
 }
 /* Macros for registering module entry and exit points. */
 
-module init(simple init);
-module exit(simple exit);
+module init(main_init);
+module exit(main_exit);
 MODULE LICENSE("GPL");
-MODULE DESCRIPTION("Simple Module");
+MODULE DESCRIPTION("Project 1");
 MODULE AUTHOR("Ashish Adhikari");
