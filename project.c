@@ -66,26 +66,34 @@ static void traverseTable(void)
 	}
 }
 
+//create new bucket and add it to hashTable
+struct list_head* create_bucket(unsigned int key){
+	struct bucket *new_bucket = kmalloc(sizeof(struct bucket), GFP_KERNEL);
+	//init key for new bucket
+	new_bucket->key=key;
+	//init hash head to hashTable
+	new_bucket->hash_head = hashTable;
+	//add new bucket to hashTable
+	list_add_tail(&(new_bucket->hash_head), &hashTable);
+	return &(new_bucket->bucket_head);
+}
+
+
+
+
 //return the bucket (and init if necessary) a person with this name will belong to
 struct list_head* get_bucket_head(char* name){
 	unsigned int key = hashName(name);
-	struct list_head* iter;
-	list_for_each(iter, &hashTable)
-	{
-		struct bucket* a_bucket = list_entry(iter, struct bucket, hash_head);
-		//if a match for key found in existing hashTable
-		if (a_bucket->key==key){
-	    return &(a_bucket->hash_head);
+	struct list_head *iter;
+	struct bucket *cur_bucket;
+	list_for_each(iter, &hashTable){
+		cur_bucket = list_entry(iter, struct bucket, hash_head);
+		if (key==cur_bucket->key){
+			return &(cur_bucket->bucket_head);
 		}
-  }
-  //if no match found for bucket with the key for name
-  struct bucket* new_bucket;
-  new_bucket = kmalloc(sizeof(*new_bucket), GFP_KERNEL);
-  if(new_bucket!=NULL){
-	  new_bucket->key = key;
-	  list_add_tail(&(new_bucket->hash_head), &hashTable);
-	  return &(new_bucket->hash_head);
 	}
+	//if bucket with key not present in hashTable
+	return create_bucket(key);
 }
 
 
@@ -102,47 +110,47 @@ static void add_birthday(struct birthday person)
 /* This function is called when the module is loaded. */
 static int __init main_init(void)
 {
-	const unsigned int num_persons = 5;
-	printk(KERN INFO "Loading Module\n");
+	printk(KERN_INFO "Loading Module\n");
 	//initialise 5 struct birthday elements
-	struct birthday person1={
+	
+	struct birthday person1 = {
 	  .name = "Charles",
 		.day = 12,
 	  .month = 1,
 	  .year = 1921,
 	};
-	struct birthday person2={
+	struct birthday person2 = {
 	  .name = "Xavier",
 		.day = 1,
 	  .month = 12,
 	  .year = 1321,
 	};
-	struct birthday person3={
+	struct birthday person3 = {
 	  .name = "Cotay",
 		.day = 22,
 	  .month = 11,
 	  .year = 1421,
 	};
-	struct birthday person4={
+	struct birthday person4 = {
 	  .name = "Ramy",
 		.day = 22,
 	  .month = 10,
 	  .year = 1969,
 	};
-	struct birthday person5={
+	struct birthday person5 = {
 	  .name = "Simpson",
 		.day = 13,
 	  .month = 7,
 	  .year = 1979,
 	};
-	init_hash_table();
+	
 	add_birthday(person1);
 	add_birthday(person2);
 	add_birthday(person3);
 	add_birthday(person4);
 	add_birthday(person5);
 
-	traverseTable();
+	//traverseTable();
 	return 0;
 }
 
@@ -150,12 +158,12 @@ static int __init main_init(void)
 static void __exit main_exit(void)
 {
 	kfree(&hashTable);
-	printk(KERN INFO "Removing Module\n");
+	printk(KERN_INFO "Removing Module\n");
 }
 /* Macros for registering module entry and exit points. */
 
-module init(main_init);
-module exit(main_exit);
-MODULE LICENSE("GPL");
-MODULE DESCRIPTION("Project 1");
-MODULE AUTHOR("Ashish Adhikari");
+module_init(main_init);
+module_exit(main_exit);
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Project 1");
+MODULE_AUTHOR("Ashish Adhikari");
