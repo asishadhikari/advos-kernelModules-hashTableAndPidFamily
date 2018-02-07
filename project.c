@@ -7,7 +7,7 @@
 //number of buckets for hash table implementation
 #define HASH_TABLE_SIZE 20
 //hash table implemented as doubly linked list with buckets of unique value 
-static struct list_head hashTable;
+ struct list_head hashTable;
 //node
 struct birthday
 {
@@ -19,6 +19,38 @@ struct birthday
 	struct list_head head;
 };
 
+	//initialise 5 struct birthday elements
+	struct birthday person1 = {
+	  .name = "Charles",
+		.day = 12,
+	  .month = 1,
+	  .year = 1921,
+	};
+	struct birthday person2 = {
+	  .name = "Xavier",
+		.day = 1,
+	  .month = 12,
+	  .year = 1321,
+	};
+	struct birthday person3 = {
+	  .name = "Cotay",
+		.day = 22,
+	  .month = 11,
+	  .year = 1421,
+	};
+	struct birthday person4 = {
+	  .name = "Ramy",
+		.day = 22,
+	  .month = 10,
+	  .year = 1969,
+	};
+	struct birthday person5 = {
+	  .name = "Simpson",
+		.day = 13,
+	  .month = 7,
+	  .year = 1979,
+	};
+	
 
 
 //container of node
@@ -107,50 +139,22 @@ static void add_birthday(struct birthday person)
 
 }
 
-
+static void init_hash_table(void){
+	struct list_head* ht = (kmalloc(sizeof(struct list_head),GFP_KERNEL)); 
+	hashTable = *ht;
+}
 /* This function is called when the module is loaded. */
 static int __init main_init(void)
 {
 	printk(KERN_INFO "Loading Module\n");
-	//initialise 5 struct birthday elements
-	struct birthday person1 = {
-	  .name = "Charles",
-		.day = 12,
-	  .month = 1,
-	  .year = 1921,
-	};
-	struct birthday person2 = {
-	  .name = "Xavier",
-		.day = 1,
-	  .month = 12,
-	  .year = 1321,
-	};
-	struct birthday person3 = {
-	  .name = "Cotay",
-		.day = 22,
-	  .month = 11,
-	  .year = 1421,
-	};
-	struct birthday person4 = {
-	  .name = "Ramy",
-		.day = 22,
-	  .month = 10,
-	  .year = 1969,
-	};
-	struct birthday person5 = {
-	  .name = "Simpson",
-		.day = 13,
-	  .month = 7,
-	  .year = 1979,
-	};
+	init_hash_table();
 	
-
 	add_birthday(person1);
 	add_birthday(person2);
 	add_birthday(person3);
 	add_birthday(person4);
 	add_birthday(person5);
-
+	
 	traverseTable();
 	return 0;
 }
