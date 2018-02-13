@@ -155,8 +155,8 @@ static void __exit main_exit(void)
 }
 /* Macros for registering module entry and exit points. */
 
-module init(main_init);
-module exit(main_exit);
+module_init(main_init);
+module_exit(main_exit);
 MODULE LICENSE("GPL");
 MODULE DESCRIPTION("Project 1");
 MODULE AUTHOR("Ashish Adhikari");
