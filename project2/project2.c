@@ -1,31 +1,49 @@
-#include <linux/module.h>       // Needed by all modules
-#include <linux/kernel.h>       // KERN_INFO
-#include <linux/sched.h>        // for_each_process, pr_info
+#include <linux/module.h>       
+#include <linux/kernel.h>       
+#include <linux/sched.h>        
 
-
-void procs_info_print(void)
-{
-        struct task_struct* task_list;
-        size_t process_counter = 0;
-        for_each_process(task_list) {
-                pr_info("== %s [%d]\n", task_list->comm, task_list->pid);
-                ++process_counter;
-        }
-        printk(KERN_INFO "== Number of process: %zu\n", process_counter);
+void print_grandparent_processes(struct task_struct* grandparent){
+	while(grandparent){
+		pr_info("Name: %s ,  State:%ld , Pid:%d  \n", tasks->comm, tasks->state, tasks->pid);
+	}
 }
 
-int init_module(void)
+void print_task_info(void)
+{
+        struct task_struct* tasks;
+        for_each_process(tasks) {
+                pr_info("name: %s ,  state:%ld , pid:%d  \n", tasks->comm, tasks->state, tasks->pid);
+                if(tasks->parent){
+                	struct task_struct* parent;
+                	parent = tasks->parent; 
+                	pr_info(" parent name:%s, parent state:%ld,  parent pid:%d \n", parent->comm, parent->state,parent->pid);
+                pr_info("######### Task has following properties ############");
+                if(tasks->parent->parent){
+                	print_grandparent_processes(tasks->parent->parent);
+                }
+
+                }
+               
+        }
+}
+
+
+static int __init main_init(void)
 {
         printk(KERN_INFO "[ INIT ==\n");
 
-        procs_info_print();
+        print_task_info();
 
         return 0;
 }
 
-void cleanup_module(void)
+static void __exit main_exit(void)
 {
-        printk(KERN_INFO "== CLEANUP ]\n");
+        printk(KERN_INFO "Exiting Module....\n");
 }
 
-MODULE_LICENSE("MIT");
+module init(main_init);
+module exit(main_exit);
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Project 2");
+MODULE_AUTHOR("Ashish Adhikari");
