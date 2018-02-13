@@ -4,7 +4,8 @@
 
 void print_grandparent_processes(struct task_struct* grandparent){
 	while(grandparent){
-		pr_info("Name: %s ,  State:%ld , Pid:%d  \n", tasks->comm, tasks->state, tasks->pid);
+		pr_info("grandparent name: %s , grandparent state:%ld , grandparent pid:%d  \n", grandparent->comm, grandparent->state, grandparent->pid);
+		grandparent = grandparent->parent;
 	}
 }
 
@@ -42,8 +43,8 @@ static void __exit main_exit(void)
         printk(KERN_INFO "Exiting Module....\n");
 }
 
-module init(main_init);
-module exit(main_exit);
+module_init(main_init);
+module_exit(main_exit);
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Project 2");
 MODULE_AUTHOR("Ashish Adhikari");
