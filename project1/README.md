@@ -5,7 +5,7 @@
 ### To compile:
 ```make```
 
-### To remove compiled objects:
+### To remove compiler output:
 ```make clean ```
 
 ### To load module into kernel:
@@ -13,3 +13,6 @@
 
 ### To check output:
 ```sudo dmesg```
+
+### To remove module from kernel:
+```sudo rmmod project2.ko```
