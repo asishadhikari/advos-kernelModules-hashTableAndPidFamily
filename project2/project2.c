@@ -1,23 +1,31 @@
-#include < sys/types.h >
-#include < stdio.h >
-#include < unistd.h >
-int main()
+#include <linux/module.h>       // Needed by all modules
+#include <linux/kernel.h>       // KERN_INFO
+#include <linux/sched.h>        // for_each_process, pr_info
+
+
+void procs_info_print(void)
 {
-pid t pid;
-/* fork a child process */
-pid = fork();
-if (pid < 0) { /* error occurred */
-fprintf(stderr, "Fork Failed");
-return 1;
+        struct task_struct* task_list;
+        size_t process_counter = 0;
+        for_each_process(task_list) {
+                pr_info("== %s [%d]\n", task_list->comm, task_list->pid);
+                ++process_counter;
+        }
+        printk(KERN_INFO "== Number of process: %zu\n", process_counter);
 }
-else if (pid == 0) { /* child process */
-execlp("/bin/ls","ls",NULL);
-printf("LINE J");
+
+int init_module(void)
+{
+        printk(KERN_INFO "[ INIT ==\n");
+
+        procs_info_print();
+
+        return 0;
 }
-else { /* parent process */
-/* parent will wait for the child to complete */
-wait(NULL);
-printf("Child Complete");
+
+void cleanup_module(void)
+{
+        printk(KERN_INFO "== CLEANUP ]\n");
 }
-return 0;
-}
+
+MODULE_LICENSE("MIT");
